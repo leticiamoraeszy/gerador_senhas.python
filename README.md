@@ -1,58 +1,118 @@
 # 🔐 Gerador de Senhas
 
-Um gerador de senhas simples e interativo, feito em Python, que permite personalizar o tamanho e os tipos de caracteres da senha.
+Gerador e verificador de senhas em Python, feito com programação orientada a objetos. As senhas são geradas com o módulo `secrets`, que usa uma fonte de aleatoriedade criptograficamente segura, ao contrário do `random`, que não é indicado para esse fim.
 
 ## ✨ Funcionalidades
 
-- Gera senhas de qualquer tamanho, definido por você
-- Permite escolher se a senha deve conter:
-  - 🔢 Números
-  - 🔤 Letras (maiúsculas e minúsculas)
-  - ⚡ Símbolos especiais
-- Gera quantas senhas você quiser, sem precisar reiniciar o programa
-- Interface no terminal com cores para facilitar a leitura
+- Geração de senhas aleatórias e seguras
+- Escolha dos tipos de caractere: números, letras maiúsculas, letras minúsculas e símbolos
+- Validação do tamanho da senha (de 7 a 16 caracteres)
+- Verificação de força com sistema de pontuação
+- Saída colorida e formatada no terminal com a biblioteca `rich`
 
-## 🛠️ Tecnologias utilizadas
+## 🛠️ Tecnologias
 
-- Python 3
-- Bibliotecas nativas: `random`, `string`, `time`
+| Recurso | Para que serve |
+|---|---|
+| `secrets` | Escolha aleatória segura dos caracteres |
+| `string` | Conjuntos prontos de caracteres (dígitos, letras, pontuação) |
+| `rich` | Impressão formatada no terminal |
 
-Não precisa instalar nenhuma biblioteca externa — só ter o Python instalado no computador.
+## 📦 Instalação
 
-## ▶️ Como executar
+Requer **Python 3.8+**.
 
-1. Baixe (ou clone) este repositório.
-2. Abra o terminal na pasta do projeto.
-3. Rode o comando:
+```bash
+# 1. Clone o repositório
+git clone <url-do-repositorio>
+cd <nome-da-pasta>
+
+# 2. Instale a dependência
+pip install rich
+```
+
+## 🚀 Como usar
+
+```python
+senha = GeradorSenhas(
+    tamanho=12,
+    usar_numeros=True,
+    usar_maiusculas=True,
+    usar_minusculas=True,
+    usar_simbolos=True,
+)
+
+senha.verificar_forca()  # mostra a pontuação e a classificação
+senha.ver_senha()        # gera e exibe uma senha
+```
+
+Para rodar:
 
 ```bash
 python gerador_senhas.py
 ```
 
-## 💻 Exemplo de uso
+### Exemplo de saída
 
 ```
-------------------------------
-GERADOR DE SENHAS
-------------------------------
-Tamanho da senha: 12
-Você quer números na sua senha?[S/N]: S
-Você quer letras na sua senha?[S/N]: S
-Você quer simbolos na sua senha?[S/N]: N
-==================================================
-SENHA GERADA: aB3fT9mZpQ7x
-==================================================
-Deseja continuar?[S/N]: N
-Encerrando...
-Até a próxima!
+--- VERIFICAÇÃO DA SENHA---
+pontuação - 6
+--GERADOR DE SENHAS--
+aB3$kL9#mQ2!
 ```
 
-## 🔧 Possíveis melhorias futuras
+## ⚙️ Parâmetros
 
-- Hoje, a opção "números" usa só os dígitos de **um único número sorteado**, o que limita a variedade. Trocar por `string.digits` deixaria o pool de números completo (0 a 9).
-- Adicionar uma opção para copiar a senha gerada direto para a área de transferência.
-- Tratar o caso em que o usuário responde "N" para todas as opções (hoje a senha sai vazia).
+| Parâmetro | Tipo | Padrão | Descrição |
+|---|---|---|---|
+| `tamanho` | `int` | — (obrigatório) | Quantidade de caracteres (de 7 a 16) |
+| `usar_numeros` | `bool` | `True` | Inclui dígitos (`0-9`) |
+| `usar_maiusculas` | `bool` | `False` | Inclui letras de `A-Z` |
+| `usar_minusculas` | `bool` | `True` | Inclui letras de `a-z` |
+| `usar_simbolos` | `bool` | `False` | Inclui símbolos (`!@#$%...`) |
 
-## 📄 Licença
+> ⚠️ Um `tamanho` fora do intervalo de 7 a 16 levanta `ValueError`.
 
-Projeto de estudo, livre para uso e modificação.
+## 🧩 Estrutura da classe
+
+| Método | O que faz |
+|---|---|
+| `tamanho` (property) | Getter e setter com validação do tamanho |
+| `montar()` | Monta o alfabeto de caracteres conforme as opções escolhidas |
+| `gerar()` | Sorteia caractere por caractere com `secrets.choice` e devolve a senha |
+| `verificar_forca()` | Calcula a pontuação e classifica a senha |
+| `ver_senha()` | Gera uma senha e a exibe no terminal |
+
+## 📊 Como a força é calculada
+
+| Critério | Pontos |
+|---|---|
+| Tamanho entre 8 e 12 caracteres | +2 |
+| Usa minúsculas | +1 |
+| Usa maiúsculas | +1 |
+| Usa símbolos | +2 |
+
+- **Pontuação ≤ 5** → senha **FRACA**
+- **Pontuação > 7** → senha **FORTE**
+
+## 🔧 Melhorias futuras
+
+Pontos que ainda podem evoluir no projeto:
+
+- [ ] Ajustar os limites da pontuação: hoje o máximo possível é 6, então a classificação "FORTE" nunca aparece, e uma pontuação 6 não mostra nenhuma classificação
+- [ ] Incluir números e o tamanho da senha de forma mais completa no cálculo de força
+- [ ] Validar o tipo (`int`) **antes** de comparar o tamanho
+- [ ] Mostrar mensagens de erro claras nos `ValueError`
+- [ ] Impedir que todas as opções de caractere sejam desativadas (alfabeto vazio causa erro)
+- [ ] Garantir ao menos um caractere de cada tipo escolhido na senha final
+- [ ] Verificar a força da senha **gerada**, não só das configurações
+- [ ] Criar interface de linha de comando com `argparse` ou interface gráfica
+- [ ] Adicionar testes automatizados
+
+## 📚 Conceitos praticados
+
+Programação orientada a objetos, `@property` e setters, validação de dados, tratamento de exceções, uso de bibliotecas externas e geração segura de dados aleatórios.
+
+## 👩‍💻 Autora
+
+Feito por **Letícia** como projeto de estudo em Python e desenvolvimento backend.
